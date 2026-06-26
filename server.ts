@@ -20,10 +20,11 @@ const main = async () => {
         const createTableBooks = `
             CREATE TABLE IF NOT EXISTS livres (
                 id SERIAL PRIMARY KEY,
-                name VARCHAR(50) NOT NULL,
-                author_name VARCHAR(100),
-                is_available BOOLEAN DEFAULT TRUE,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                titre VARCHAR(255) NOT NULL,
+                auteur VARCHAR(255) NOT NULL,
+                categorie VARCHAR(100),
+                annee_publication INT,
+                disponible BOOLEAN DEFAULT true
             )
         `;
 
@@ -31,16 +32,16 @@ const main = async () => {
 
         app.post("/livres", async (req, res) => {
             try {
-                const { name, isAvailable, authorName } = req.body;
+                const { titre, auteur, categorie, annee_publication, disponible } = req.body;
                 const insertQuery = `
-                    INSERT INTO livres (name, author_name, is_available)
-                    VALUES ($1, $2, $3)
+                    INSERT INTO livres (titre, auteur, categorie, annee_publication, disponible)
+                    VALUES ($1, $2, $3, $4, $5)
                 `;
-                await db.query(insertQuery, [name, authorName, isAvailable]);
-                res.status(201).json({ message: "The Book has been created" });
-            } catch (_err) {
-                console.log(_err);
-                res.status(403).json({ error: "Error occurred, please provide all information needed" });
+                await db.query(insertQuery, [titre, auteur, categorie, annee_publication, disponible]);
+                res.status(201).json({ message: "Livre ajouté avec succès" });
+            } catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Erreur lors de l ajout du livre" });
             }
         });
 
